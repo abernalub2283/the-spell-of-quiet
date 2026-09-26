@@ -115,3 +115,60 @@ button {
     color: var(--muted);
     font-style: italic;
 }
+
+#palette-picker {
+    background-color: var(--card);
+    border: 2px solid var(--accent);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    width: 640px;
+    max-width: 90vw;
+    text-align: left;
+}
+
+#palette-picker h3 {
+    margin: 0 0 12px 0;
+    color: var(--accent);
+}
+
+#preset-palettes {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.preset {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 2px solid var(--text);
+    padding: 0;
+    margin: 0;
+}
+
+#custom-colors {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.color-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 13px;
+    color: var(--muted);
+    gap: 4px;
+}
+
+.color-row input[type="color"] {
+    width: 44px;
+    height: 44px;
+    border: none;
+    border-radius: 8px;
+    background: none;
+    padding: 0;
+    cursor: pointer;
+}

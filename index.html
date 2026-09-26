@@ -102,6 +102,8 @@
             document.getElementById('writing-area').innerHTML = page.content;
             document.getElementById('home-view').hidden = true;
             document.getElementById('page-view').hidden = false;
+            renderCustomInputs();
+
         }
 
         function goHome() {
@@ -145,6 +147,81 @@
         });
 
         renderCards();
+
+        const presetPalettes = [
+            {name: 'Mignight Botanical', bg: '#1a1a2e', card: '#2d1b2e', accent: '#c9a227', text: '#e8e0d0', muted: '#a89a7a'},
+            {name: 'Forest Whispers', bg: '#2c3e50', card: '#34495e', accent: '#2ecc71', text: '#ecf0f1', muted: '#95a5a6'},
+            {name: 'Sunset Serenade', bg: '#ff7f50', card: '#ff6347', accent: '#ffd700', text: '#ffffff', muted: '#ff4500'},
+            {name: 'Ocean Breeze', bg: '#0077b6', card: '#005f8a', accent: '#00b4d8', text: '#ffffff', muted: '#90e0ef'},
+            {name: 'Ghost Flame', bg: '#0f1b2d', card: '#1c2f4a', accent: '#7fd4c1', text: '#e8f0e8', muted: '#7a9a94'},
+            {name: 'Desert Dusk', bg: '#d35400', card: '#e67e22', accent: '#f1c40f', text: '#ffffff', muted: '#c0392b'},
+            {name: 'Twilight Reverie', bg: '#2c003e', card: '#4b0082', accent: '#ff69b4', text: '#ffffff', muted: '#9370db'},
+            {name: 'Arctic Aurora', bg: '#004e64', card: '#003545', accent: '#00ffcc', text: '#ffffff', muted: '#7f8c8d'},
+            {name: 'Midnight Bloom', bg: '#1a0a2e', card: '#2d1b4e', accent: '#ff66ff', text: '#ffffff', muted: '#9966cc'},
+            {name: 'Emerald Dreams', bg: '#013220', card: '#004d40', accent: '#00ff7f', text: '#ffffff', muted: '#26a69a'},
+            {name: 'Golden Hour', bg: '#f39c12', card: '#e67e22', accent: '#f1c40f', text: '#ffffff', muted: '#d35400'},
+            {name: 'Velvet Night', bg: '#2c003e', card: '#4b0082', accent: '#ff69b4', text: '#ffffff', muted: '#9370db'},
+            {name: 'Crimson Twilight', bg: '#8b0000', card: '#a52a2a', accent: '#ff4500', text: '#ffffff', muted: '#cd5c5c'},
+            {name: 'Silver Moonlight', bg: '#c0c0c0', card: '#a9a9a9', accent: '#ffd700', text: '#000000', muted: '#808080'},
+            {name: 'Noir Plum', bg: '#1a1420', card: '#2b1e33', accent:'#c9a227', text: '#ece0d0', muted: '##9a8a7a'},
+            {name: 'Obsidian Shadow', bg: '#0a0a0a', card: '#1c1c1c', accent: '#ff6600', text: '#ffffff', muted: '#808080'},
+            {name: 'Shadowed Rose', bg: '#2c003e', card: '#4b0082', accent: '#ff69b4', text: '#ffffff', muted: '#9370db'},
+            {name: 'Midnight Orchid', bg: '#1a0a2e', card: '#2d1b4e', accent: '#ff66ff', text: '#ffffff', muted: '#9966cc'},
+            {name: 'Spring Meadow', bg: '#1c2z1e', card: '#2a3d2c', accent: '#e79fb1', text: '#f0ead8', muted: '#9aa88f'},
+            {name: 'Autumn Leaves', bg: '#8b4513', card: '#a0522d', accent: '#f0e68c', text: '#ffffff', muted: '#cd853f'},
+            {name: 'Terracotta Dusk', bg: '#241812', card: '#3a241a', accent: '#d97b4f', text: '#f0e2d0', muted: '#a88a6a'},
+            {name: 'Ocean Morning', bg: '#10222e', card: '#1a3547', accent: '#5fb4d9', text: '#e4f0f5', muted: '#7a9aab'}
+        ];
+
+        function renderPresets() {
+            const wrap = document.getElementById('preset-palettes');
+            wrap.innerHTML = presetPalettes.map(function(preset, i) {
+                return `<button class='preset' data-i="${i}" title="${preset.name}"
+                    style="background: linear-gradient(135deg, ${preset.bg} 0 40%, ${preset.card} 40% 70%, ${preset.accent} 70%);"></button>`;
+            }).join('');
+        }
+
+        document.getElementById('preset-palettes').addEventListener('click', function(event) {
+            const btn = event.target.closest('.preset');
+            if (!btn) return;
+            const page = pages.find(p => p.id === openPageId);
+            if (!page) return;
+            page.palette = Object.assign({}, presetPalettes[Number(btn.dataset.i)]);
+            applyPalette(page.palette);
+            savePages();
+            renderCustomInputs();
+        });
+
+        renderPresets();
+
+        const colorRoles = [
+            { key: 'bg', label: 'Background' },
+            { key: 'card', label: 'Cards' },
+            { key: 'accent', label: 'Accent' },
+            { key: 'text', label: 'Text' },
+            { key: 'muted', label: 'Muted' }
+        ];
+
+        function renderCustomInputs() {
+            const page = pages.find(p => p.id === openPageId);
+            const wrap = document.getElementById('custom-colors');
+            wrap.innerHTML = colorRoles.map(function(role) {
+                const value = page ? page.palette[role.key] : defaultPalette[role.key];
+                return `<label class="color-row">${role.label}
+                    <input type="color" data-key="${role.key}" value="${value}">
+                </label>`;
+            }).join('');
+        }
+
+        document.getElementById('custom-colors').addEventListener('input', function(event) {
+            const input = event.target.closest('input[type="color"]');
+            if (!input) return;
+            const page = pages.find(p => p.id === openPageId);
+            if (!page) return;
+            page.palette[input.dataset.key] = input.value;
+            applyPalette(page.palette);
+            savePages();
+        });
 
         </script>
     </body>
