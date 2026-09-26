@@ -88,3 +88,30 @@ button {
     right: 20px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
 }
+
+.page-card {
+    background-color: var(--card);
+    border: 2px solid var(--accent);
+    border-radius: 12px;
+    padding: 20px 24px;
+    width: 220px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.page-card h3 {
+    margin: 4px 0 0 0;
+}
+
+.type-label {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--accent);
+    margin: 0;
+}
+
+.empty {
+    color: var(--muted);
+    font-style: italic;
+}

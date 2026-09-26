@@ -13,7 +13,7 @@
             <div id="toolbar" class="tools">
                 <button id="new-page">+ New Page</button>
             </div>
-            <button id="toddle-tools">Hide Tools</button>
+            <button id="toggle-tools">Hide Tools</button>
         </header>
 
         <main id="home-view">
@@ -25,7 +25,7 @@
             <h2 id="page-title"></h2>
             <p id="page-type"></p>
             <div id="palette-picker" class="tools">
-                <h3
+                <h3>Palette</h3>
                 <div id="preset-palettes"></div>
                 <div id="custom-colors"></div>
             </div>
@@ -39,12 +39,113 @@
         </main>
 
         <script>
-            const toggleBtn = document.getElementById('toddle-tools');
+            const toggleBtn = document.getElementById('toggle-tools');
             toggleBtn.addEventListener('click', function() {
                 const hidden = document.body.classList.toggle('hiding-tools');
                 toggleBtn.textContent = hidden ? 'Show Tools' : 'Hide Tools'
             });
-            // Step 2: pages data + rendering
+           const typeLabels = { fiber: 'Fiber Project', book: 'Book', legacy: 'Sim Legacy' };
+
+        const defaultPalette = { bg: '#1a1a2e', card: '#2d1b2e', accent: '#c9a227', text: '#e8e0d0', muted: '#a89a7a' };
+
+        function seedPages() {
+            return [
+                { id: 'wisp', title: 'Will-O-The-Wisp Socks', type: 'fiber',
+                palette: { bg: '#0f1b2d', card: '#1c2f4a', accent: '#7fd4c1', text: '#e8f0e8', muted: '#7a9a94' },
+                content: '<p>Two socks, one ghostly flame of a colorway.</p>' },
+                { id: 'silk', title: 'Silk Shadows', type: 'book',
+                palette: { bg: '#1a1420', card: '#2b1e33', accent: '#c9a227', text: '#ece0d0', muted: '#9a8a7a' },
+                content: '<p>Historical murder mystery, duet with Bronze Blood.</p>' },
+                { id: 'springtide', title: 'Springtide Bloom Legacy', type: 'legacy',
+                palette: { bg: '#1c2a1e', card: '#2a3d2c', accent: '#e79fb1', text: '#f0ead8', muted: '#9aa88f' },
+                content: '<p>Gen 1: Tulip Fields, founder Poppy Larkspur.</p>' }
+            ];
+        }
+
+        let pages = JSON.parse(localStorage.getItem('quietPages')) || seedPages();
+        let openPageId = null;
+
+        function savePages() {
+            localStorage.setItem('quietPages', JSON.stringify(pages));
+        }
+
+        function renderCards() {
+            const wrap = document.getElementById('page-cards');
+            if (pages.length === 0) {
+                wrap.innerHTML = '<p class="empty">No pages yet — create your first one above.</p>';
+                return;
+            }
+            wrap.innerHTML = pages.map(function(p) {
+                return `<div class="page-card" data-id="${p.id}" style="--card: ${p.palette.card}; --accent: ${p.palette.accent}">
+                    <p class="type-label">${typeLabels[p.type]}</p>
+                    <h3>${p.title}</h3>
+                </div>`;
+            }).join('');
+        }
+
+        function applyPalette(pal) {
+            const root = document.documentElement;
+            root.style.setProperty('--bg', pal.bg);
+            root.style.setProperty('--card', pal.card);
+            root.style.setProperty('--accent', pal.accent);
+            root.style.setProperty('--text', pal.text);
+            root.style.setProperty('--muted', pal.muted);
+        }
+
+        function openPage(id) {
+            const page = pages.find(p => p.id === id);
+            if (!page) return;
+            openPageId = id;
+            applyPalette(page.palette);
+            document.getElementById('page-title').textContent = page.title;
+            document.getElementById('page-type').textContent = typeLabels[page.type];
+            document.getElementById('writing-area').innerHTML = page.content;
+            document.getElementById('home-view').hidden = true;
+            document.getElementById('page-view').hidden = false;
+        }
+
+        function goHome() {
+            openPageId = null;
+            applyPalette(defaultPalette);
+            document.getElementById('home-view').hidden = false;
+            document.getElementById('page-view').hidden = true;
+            renderCards();
+        }
+
+        document.getElementById('page-cards').addEventListener('click', function(event) {
+            const card = event.target.closest('.page-card');
+            if (card) openPage(card.dataset.id);
+        });
+        document.getElementById('back-home').addEventListener('click', goHome);
+
+        document.getElementById('new-page').addEventListener('click', function() {
+            const title = prompt('Page title:');
+            if (!title) return;
+            const type = prompt('Type: fiber, book, or legacy?').toLowerCase().trim();
+            if (!['fiber', 'book', 'legacy'].includes(type)) {
+                alert('Please type fiber, book, or legacy.');
+                return;
+            }
+            pages.push({
+                id: Date.now().toString(),
+                title: title,
+                type: type,
+                palette: Object.assign({}, defaultPalette),
+                content: ''
+            });
+            savePages();
+            renderCards();
+        });
+
+        document.getElementById('writing-area').addEventListener('input', function(event) {
+            const page = pages.find(p => p.id === openPageId);
+            if (!page) return;
+            page.content = event.target.innerHTML;
+            savePages();
+        });
+
+        renderCards();
+
         </script>
     </body>
 </html>
