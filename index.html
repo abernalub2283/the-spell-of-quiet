@@ -56,9 +56,9 @@
                 { id: 'silk', title: 'Silk Shadows', type: 'book',
                 palette: { bg: '#1a1420', card: '#2b1e33', accent: '#c9a227', text: '#ece0d0', muted: '#9a8a7a' },
                 content: '<p>Historical murder mystery, duet with Bronze Blood.</p>' },
-                { id: 'springtide', title: 'Springtide Bloom Legacy', type: 'legacy',
-                palette: { bg: '#1c2a1e', card: '#2a3d2c', accent: '#e79fb1', text: '#f0ead8', muted: '#9aa88f' },
-                content: '<p>Gen 1: Tulip Fields, founder Poppy Larkspur.</p>' }
+                { id: 'sugarspun', title: 'Sugarspun Tide Legacy', type: 'legacy',
+                palette: { bg: '#85a2d4', card: '#ffdccb', accent: '#afebf3', text: '#fdf0f9', muted: '#8ed5f3' },
+                content: '<p>Gen 0: The Tidewitch, Melusine Brinesweet..</p>' }
             ];
         }
 
@@ -222,7 +222,18 @@
             applyPalette(page.palette);
             savePages();
         });
-
+        
+        document.getElementById('editor-toolbar').addEventListener('mousedown', function(event) {
+            const btn = event.target.closest('button[data-cmd]');
+            if (!btn) return;
+            event.preventDefault();
+            document.execCommand(btn.dataset.cmd, false, btn.dataset.value || null);
+            const page = pages.find(p => p.id === openPageId);
+            if (page) {
+                page.content = document.getElementById('writing-area').innerHTML;
+ s               savePages();
+            }
+        });
         </script>
     </body>
 </html>
